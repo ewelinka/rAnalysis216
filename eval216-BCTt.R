@@ -123,7 +123,9 @@ for(g in groups) {
 ####### preparing data for factorial annova
 # Check cell sizes are equal (ish) using replications()
 replications(TOTAL ~ TYPE * GROUP, data=bct)
+bct$GROUP = factor(bct$GROUP, levels=c("ALE","SOFI","ELO"), labels=c("A2","A1","CG"))
 boxplot(TOTAL ~ TYPE * GROUP, data=bct, ylab="Total score", main="Boxplots of BCTt total scores")
+
 
 # grouped by active and passive
 boxplot(TOTAL ~ TYPE * GROUP2, data=bct, ylab="Total score", main="Boxplots of BCTt total scores")

@@ -397,3 +397,9 @@ ggplot(techCheckRobotitoQuestionMElted, aes(x = variable, y = NAME)) +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3),
                      axis.text.y=element_text(size=9),
                      plot.title=element_text(size=11))
+
+###### techcheck difficulty index relkin2021
+relkin2021 <- c(0.58,0.59,0.6,0.55,0.33,0.33,0.31,0.67,0.56)
+techCheckDifficulty <- round(colSums(techCheck[techCheck$TYPE=="PRE",c(4:12)])/56,2)
+shapiro.test(relkin2021) ## not normal
+cor.test(relkin2021, techCheckDifficulty, method="spearman")

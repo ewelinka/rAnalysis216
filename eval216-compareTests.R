@@ -364,6 +364,13 @@ Hmisc::rcorr(as.matrix(bctTechCheckAbilities),type = "spearman")
 bctTechCheckAbilitiesPre = cbind(bctAbilitiesRobotitoPre[,c("SEQUENCES","IF","SIMPLE","NESTED")],techCheckAbilitiesRobotitoPre[, c("ALGORITHMS","REPRESENTATION","CONTROL")])
 Hmisc::rcorr(as.matrix(bctTechCheckAbilitiesPre),type = "spearman")
 
+#### initial 4 sequences and robotito
+bct4seqPOST_AG = rowSums(bct[bct$TYPE=="POST" & bct$GROUP2=="ACTIVE",c("P1","P2","P3","P4")])
+cor.test(robotitoV2$TOTAL_R, bct4seqPOST_AG)
+bct4seq = bct[,c("NAME","TYPE","GROUP","GROUP2")]
+bct4seq$SEQ1234 = rowSums(bct[,c("P1","P2","P3","P4")])
+wilcox.test(bct4seq[bct4seq$TYPE=="POST",]$SEQ1234,bct4seq[bct4seq$TYPE=="PRE",]$SEQ1234, paired=TRUE)
+
 #### ROBOTITO MATRIX
 library(reshape2) #to use melt
 library(ggplot2)
@@ -401,4 +408,17 @@ ggscatter(totals,x = "TOTAL_bct", y = "TOTAL_techCheck", size = 0.3,
 
 ggscatter(totals,x = "TOTAL_bct", y = "TOTAL_techCheck",add = "reg.line", cor.coef = TRUE, cor.method = "spearman", xlab = "BCTt score", ylab = "TechCheck-K score", color = "GROUP2",point = "FALSE") + geom_jitter()
 
+#### each question
+# A1,A2 and CG
+bctTechCheckAllGroups= bct[,c("NAME",questions13)]
+colnames(bctTechCheckAllGroups)[2:14] = paste(questions13,"B", sep="")
+bctTechCheckAllGroups=cbind(bctTechCheckAllGroups,techCheck[,questions9])
+colnames(bctTechCheckAllGroups)[15:23] = paste(questions9,"T", sep="")
+install.packages("psych")
+library(psych)
+
+phi_coefficient <- phi(bctTechCheckAllGroups) ## ERROR recibe dos vectores!
+print(phi_coefficient)
+
+allTestsActiveGroup
 
