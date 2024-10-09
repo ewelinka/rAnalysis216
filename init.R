@@ -10,6 +10,7 @@ questions9 = questions13[1:9]
 questions9abilities = c("Alg1","Alg2","Alg3","Alg4","Alg5","Rep1","Rep2","Control1","Control2")
 questions13abilities = c("Seq1","Seq2","Seq3","Seq4","Seq5","Seq6","If1","If2","sLoop","nLoop1","nLoop2","nLoop3","nLoop4")
 questionsSeqAbilities = c("Seq1","Seq2","Seq3","Seq4","Seq5","Seq6")
+
 initVars <- function() {
   # 1/4 questions right / 4 excluded 
   robotito25 = c("Sebastián Jacinto", "María Pía Rivero", "Sofía Acevedo", "Leandra Suarez") 

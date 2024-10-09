@@ -506,9 +506,9 @@ bctRobotitoQuestion = bctRobotitoQuestion[bctRobotitoQuestion$TYPE=="POST",]
 # update 0 values for case pre 1 - post 1 from 0 to 0.5
 # recorro preguntas, recorro ninos
 for(p in questions13){
-  # print(p)
+ #  print(p)
   for(n in bctRobotitoQuestion$NAME){
-    #  print(n)
+     # print(n)
     bctRobotitoQuestion[bctRobotitoQuestion$NAME==n,][,p] = bct[which(bct$NAME==n & bct$TYPE=="POST"),p] - bct[which(bct$NAME==n & bct$TYPE=="PRE"),p]
     if(bctRobotitoQuestion[bctRobotitoQuestion$NAME==n,][,p] == 0){
       cat(p,n,i,bct[which(bct$NAME==n & bct$TYPE=="PRE"),p],"\n")
@@ -520,7 +520,8 @@ for(p in questions13){
     }
   }
 }
-
+#anonymized
+bctRobotitoQuestion$NAME = factor(bctRobotitoQuestion$NAME, levels = bctRobotitoQuestion$NAME, labels=c(paste("A2-",1:19,sep=""),paste("A1-",1:17,sep="")))
 # add robotito
 robotitoV2RobotitoQuestion <- read.csv("./csv/robotitoV2.csv",sep = ",")
 robotitoV2RobotitoQuestion$TOTAL=apply(robotitoV2RobotitoQuestion[,c(3:6)],1,FUN=sum)
@@ -532,14 +533,14 @@ bctRobotitoQuestion = bctRobotitoQuestion[order(bctRobotitoQuestion[, "TOTAL_R"]
 bctRobotitoQuestion$NAME <- factor(bctRobotitoQuestion$NAME, levels = bctRobotitoQuestion$NAME)
 colnames(bctRobotitoQuestion)[4:16] = questions13abilities
 
-bctRobotitoQuestionMElted<-melt(bctRobotitoQuestion[,c("NAME","TOTAL_R", questionsSeqAbilities)])
+bctRobotitoQuestionMelted<-melt(bctRobotitoQuestion[,c("NAME","TOTAL_R", questionsSeqAbilities)])
 
 
-ggplot(bctRobotitoQuestionMElted, aes(x = variable, y = NAME)) + 
+ggplot(bctRobotitoQuestionMelted, aes(x = variable, y = NAME)) + 
   geom_raster(aes(fill=value)) + 
   geom_text(aes(label = value)) +
   scale_fill_gradient(low="red", high="green") +
-  labs(x="Test", y="Name", title="Matrix comparing tests results in %") +
+  labs(x="Item", y="Child ID", title="Matrix comparing PRE and POST results in Robotito Test and BCTt Sequencing") +
   theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3),
                      axis.text.y=element_text(size=9),
                      plot.title=element_text(size=11))
@@ -550,3 +551,63 @@ cor.test(bctDifficulty$ESTIMATEDSCORE,bctDifficulty$PRESCORE, method="spearman")
 cor.test(bctDifficulty$ESTIMATEDSCORE,bctDifficulty$PREA1, method="spearman")
 cor.test(bctDifficulty$ESTIMATEDSCORE,bctDifficulty$PREA2, method="spearman")
 cor.test(bctDifficulty$ESTIMATEDSCORE,bctDifficulty$PRECG, method="spearman")
+
+
+##### control group only seq 1 to 4
+
+# VALOR POST BCT
+# 1 / pasó de 0 a 1
+# 0.5 / se mantuve en 1
+# 0 / tuvo 0, está en 0
+# -1 / baj'o de 1 a 0
+
+bctQuestion <- read.csv("./csv/BCTt.csv",sep = ",")
+# add total value
+bctQuestion$GROUP2 = factor(bctQuestion$GROUP, levels=c("ALE","SOFI","ELO"), labels=c("ACTIVE","ACTIVE","PASSIVE"))
+# changing TYPE from chr to factor
+bctQuestion$TYPE = factor(bctQuestion$TYPE, levels=c("PRE","POST"), labels=c("PRE","POST"))
+# changing GROUP from chr to factor
+bctQuestion$GROUP = factor(bctQuestion$GROUP, levels=c("ALE","SOFI","ELO"), labels=c("A2","A1","CG"))
+
+bctQuestion = bctQuestion[bctQuestion$TYPE=="POST",]
+bctQuestion = bctQuestion[bctQuestion$GROUP=="CG",]
+
+# substract pre from post
+# update 0 values for case pre 1 - post 1 from 0 to 0.5
+# recorro preguntas, recorro ninos
+for(p in questions13){
+  # print(p)
+  for(n in bctQuestion$NAME){
+    #  print(n)
+    bctQuestion[bctQuestion$NAME==n,][,p] = bct[which(bct$NAME==n & bct$TYPE=="POST"),p] - bct[which(bct$NAME==n & bct$TYPE=="PRE"),p]
+    if(bctQuestion[bctQuestion$NAME==n,][,p] == 0){
+      cat(p,n,i,bct[which(bct$NAME==n & bct$TYPE=="PRE"),p],"\n")
+      # pre value
+      #bct[bct$NAME==n,][,p][1]
+      if(bct[which(bct$NAME==n & bct$TYPE=="PRE"),p] == 1){
+        bctQuestion[bctQuestion$NAME==n,][,p] = 0.5
+      }
+    }
+  }
+}
+# anonymized
+bctQuestion$NAME = factor(bctQuestion$NAME, levels = bctQuestion$NAME, labels=c(paste("CG-",1:20,sep="")))
+# order 
+bctQuestion = bctQuestion[order(bctQuestion[, "GROUP"],bctQuestion[, "P1"],bctQuestion[, "P2"],bctQuestion[, "P3"]),]
+bctQuestion$NAME <- factor(bctQuestion$NAME, levels = bctQuestion$NAME)
+colnames(bctQuestion)[4:16] = questions13abilities
+
+bctQuestionMelted<-melt(bctQuestion[,c("NAME", questions13abilities[1:4])][bctQuestion$GROUP=="CG",])
+
+ggplot(bctQuestionMelted, aes(x = variable, y = NAME)) + 
+  geom_raster(aes(fill=value)) + 
+  geom_text(aes(label = value)) +
+  scale_fill_gradient(low="red", high="green") +
+  labs(x="Test", y="Name", title="Matrix comparing tests results in %") +
+  theme_bw() + theme(axis.text.x=element_text(size=9, angle=0, vjust=0.3),
+                     axis.text.y=element_text(size=9),
+                     plot.title=element_text(size=11))
+
+zapata2020 = c(93 ,93 ,91 ,89 ,76 ,87 ,71 ,41 ,77  ,76  ,55  ,27 ,96 )
+
+our= c(62, 64, 73, 61, 52, 57, 50, 29, 50, 64, 27, 25, 71)
